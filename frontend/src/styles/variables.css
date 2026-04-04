@@ -1,0 +1,311 @@
+/* Dynamic Theme Variables - Easy to customize colors and fonts */
+
+/* ===== FONT FAMILIES ===== */
+:root {
+  /* Primary font stack - Open Sans */
+  --font-primary: 'Open Sans', Helvetica, Arial, sans-serif;
+
+  /* Alternative fonts for variety */
+  --font-secondary: 'Open Sans', Helvetica, Arial, sans-serif;
+  --font-heading: 'Open Sans', Helvetica, Arial, sans-serif;
+  --font-mono: 'Courier New', monospace;
+}
+
+/* ===== COLOR PALETTES ===== */
+
+/* ===== PRIMARY THEME COLORS ===== */
+:root {
+  /* Restored original blue/purple theme palette */
+  --primary-color-1: #2c5aa0;
+  --primary-color-2: #7c4dff;
+
+  /* Original blue shade tokens */
+  --primary-dark: #1e3a5f;
+  --primary-light: #5c7cfa;
+
+  /* Warm secondary accent colors */
+  --secondary-color-1: #ff8a65;
+  --secondary-color-2: #ff5722;
+
+  /* Green accent colors */
+  --accent-color-1: #43a047;
+  --accent-color-2: #1b5e20;
+}
+
+/* ===== NEUTRAL COLORS ===== */
+:root {
+  /* Whites and off-whites */
+  --white: #ffffff;
+  --white-off: #fafafa;
+  --white-soft: #f8f9fa;
+
+  /* Grays */
+  --gray-50: #f7fafc;
+  --gray-100: #edf2f7;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e0;
+  --gray-400: #a0aec0;
+  --gray-500: #718096;
+  --gray-600: #4a5568;
+  --gray-700: #2d3748;
+  --gray-800: #1a202c;
+  --gray-900: #171923;
+
+  /* Blacks */
+  --black: #000000;
+  --black-soft: #2d3748;
+}
+
+/* ===== SEMANTIC COLORS ===== */
+:root {
+  /* Success colors */
+  --success-bg: #d4edda;
+  --success-text: #155724;
+  --success-border: #c3e6cb;
+
+  /* Error colors */
+  --error-bg: #f8d7da;
+  --error-text: #721c24;
+  --error-border: #f5c6cb;
+
+  /* Warning colors */
+  --warning-bg: #fff3cd;
+  --warning-text: #856404;
+  --warning-border: #ffeaa7;
+
+  /* Info colors */
+  --info-bg: #d1ecf1;
+  --info-text: #0c5460;
+  --info-border: #bee5eb;
+}
+
+/* ===== COMPONENT COLORS ===== */
+:root {
+  /* Backgrounds */
+  --bg-primary: linear-gradient(135deg, var(--primary-color-1) 0%, var(--primary-color-2) 100%);
+  --bg-secondary: linear-gradient(135deg, var(--secondary-color-1) 0%, var(--secondary-color-2) 100%);
+  --bg-accent: linear-gradient(135deg, var(--accent-color-1) 0%, var(--accent-color-2) 100%);
+  --bg-light: var(--gray-50);
+  --bg-white: var(--white);
+
+  /* Text colors */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-light: var(--white);
+  --text-muted: var(--gray-500);
+
+  /* Border colors */
+  --border-light: var(--gray-200);
+  --border-medium: var(--gray-300);
+  --border-dark: var(--gray-400);
+
+  /* Shadow colors */
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-heavy: rgba(0, 0, 0, 0.2);
+}
+
+/* ===== THEME PRESETS ===== */
+
+/* ===== SPORT THEMES ===== */
+
+/* Football Theme */
+.theme-football {
+  --primary-color-1: #1e3a8a;
+  --primary-color-2: #3b82f6;
+  --accent-color-1: #059669;
+  --accent-color-2: #10b981;
+}
+
+/* Basketball Theme */
+.theme-basketball {
+  --primary-color-1: #dc2626;
+  --primary-color-2: #ef4444;
+  --accent-color-1: #f59e0b;
+  --accent-color-2: #f97316;
+}
+
+/* Cricket Theme */
+.theme-cricket {
+  --primary-color-1: #166534;
+  --primary-color-2: #16a34a;
+  --accent-color-1: #92400e;
+  --accent-color-2: #d97706;
+}
+
+/* Tennis Theme */
+.theme-tennis {
+  --primary-color-1: #7c2d12;
+  --primary-color-2: #ea580c;
+  --accent-color-1: #1e40af;
+  --accent-color-2: #3b82f6;
+}
+
+/* Volleyball Theme */
+.theme-volleyball {
+  --primary-color-1: #7c3aed;
+  --primary-color-2: #a855f7;
+  --accent-color-1: #db2777;
+  --accent-color-2: #ec4899;
+}
+
+/* Baseball Theme */
+.theme-baseball {
+  --primary-color-1: #1f2937;
+  --primary-color-2: #374151;
+  --accent-color-1: #dc2626;
+  --accent-color-2: #ef4444;
+}
+
+/* ===== COLOR SCHEME PRESETS ===== */
+
+/* Dark Theme */
+.theme-dark {
+  --bg-light: var(--gray-800);
+  --bg-white: var(--gray-700);
+  --text-primary: var(--gray-100);
+  --text-secondary: var(--gray-300);
+  --text-light: var(--gray-900);
+  --border-light: var(--gray-600);
+  --border-medium: var(--gray-500);
+  --shadow-light: rgba(0, 0, 0, 0.3);
+}
+
+/* Light Theme (Default) */
+.theme-light {
+  --bg-light: var(--gray-50);
+  --bg-white: var(--white);
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-light: var(--white);
+  --border-light: var(--gray-200);
+  --border-medium: var(--gray-300);
+  --shadow-light: rgba(0, 0, 0, 0.1);
+}
+
+/* High Contrast Theme */
+.theme-high-contrast {
+  --primary-color-1: #000000;
+  --primary-color-2: #333333;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --bg-white: #ffffff;
+  --bg-light: #f0f0f0;
+  --border-light: #000000;
+  --border-medium: #333333;
+}
+
+/* ===== FONT SIZE VARIABLES ===== */
+:root {
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+  --font-size-6xl: 3.75rem;   /* 60px */
+}
+
+/* ===== SPACING VARIABLES ===== */
+:root {
+  --spacing-xs: 0.25rem;    /* 4px */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 1rem;       /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  --spacing-xl: 2rem;       /* 32px */
+  --spacing-2xl: 3rem;      /* 48px */
+  --spacing-3xl: 4rem;      /* 64px */
+}
+
+/* ===== BORDER RADIUS VARIABLES ===== */
+:root {
+  --radius-sm: 0.25rem;     /* 4px */
+  --radius-md: 0.375rem;    /* 6px */
+  --radius-lg: 0.5rem;      /* 8px */
+  --radius-xl: 0.75rem;     /* 12px */
+  --radius-2xl: 1rem;       /* 16px */
+  --radius-full: 9999px;    /* Fully rounded */
+}
+
+/* ===== SHADOW VARIABLES ===== */
+:root {
+  --shadow-sm: 0 1px 2px 0 var(--shadow-light);
+  --shadow-md: 0 4px 6px -1px var(--shadow-light), 0 2px 4px -1px var(--shadow-light);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-medium), 0 4px 6px -2px var(--shadow-light);
+  --shadow-xl: 0 20px 25px -5px var(--shadow-medium), 0 10px 10px -5px var(--shadow-light);
+  --shadow-2xl: 0 25px 50px -12px var(--shadow-heavy);
+}
+
+/* ===== ANIMATION VARIABLES ===== */
+:root {
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+:root {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Font families */
+.font-primary { font-family: var(--font-primary); }
+.font-secondary { font-family: var(--font-secondary); }
+.font-heading { font-family: var(--font-heading); }
+.font-mono { font-family: var(--font-mono); }
+
+/* Text colors */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-light { color: var(--text-light); }
+.text-muted { color: var(--text-muted); }
+
+/* Background colors */
+.bg-primary { background: var(--bg-primary); }
+.bg-secondary { background: var(--bg-secondary); }
+.bg-accent { background: var(--bg-accent); }
+.bg-light { background-color: var(--bg-light); }
+.bg-white { background-color: var(--bg-white); }
+
+/* Border colors */
+.border-light { border-color: var(--border-light); }
+.border-medium { border-color: var(--border-medium); }
+
+/* Shadows */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* ===== THEME SWITCHER UTILITY ===== */
+
+/* Apply themes by adding class to body or html element */
+/* Example: <body class="theme-football theme-dark"> */
+
+/* ===== DYNAMIC THEME FUNCTIONS ===== */
+/* You can create JavaScript functions to dynamically change these variables */
+
+/*
+Example JavaScript to change theme:
+
+function setTheme(themeName) {
+  document.documentElement.className = themeName;
+}
+
+function setCustomColors(primary1, primary2) {
+  document.documentElement.style.setProperty('--primary-color-1', primary1);
+  document.documentElement.style.setProperty('--primary-color-2', primary2);
+}
+
+// Usage:
+setTheme('theme-football');
+setCustomColors('#ff0000', '#00ff00');
+*/
