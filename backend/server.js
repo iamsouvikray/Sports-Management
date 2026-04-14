@@ -9,217 +9,181 @@ import { v4 as uuidv4 } from 'uuid';
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Middleware
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Data file path
+// ================= FILE PATHS =================
 const PLAYERS_FILE = path.join(__dirname, 'data', 'players.json');
+const USERS_FILE = path.join(__dirname, 'data', 'users.json');
 
-// Helper functions for JSON file operations
+// ================= USER FUNCTIONS =================
+const readUsers = () => {
+  if (!fs.existsSync(USERS_FILE)) return [];
+  return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+};
+
+const writeUsers = (users) => {
+  const dir = path.dirname(USERS_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+};
+
+// ================= PLAYER FUNCTIONS =================
 const readPlayers = () => {
-  try {
-    if (!fs.existsSync(PLAYERS_FILE)) {
-      return [];
-    }
-    const data = fs.readFileSync(PLAYERS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading players file:', error);
-    return [];
-  }
+  if (!fs.existsSync(PLAYERS_FILE)) return [];
+  return JSON.parse(fs.readFileSync(PLAYERS_FILE, 'utf8'));
 };
 
 const writePlayers = (players) => {
-  try {
-    // Ensure data directory exists
-    const dataDir = path.dirname(PLAYERS_FILE);
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-    fs.writeFileSync(PLAYERS_FILE, JSON.stringify(players, null, 2));
-  } catch (error) {
-    console.error('Error writing players file:', error);
-    throw error;
-  }
+  const dir = path.dirname(PLAYERS_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(PLAYERS_FILE, JSON.stringify(players, null, 2));
 };
 
-// Create uploads directory if it doesn't exist
-if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
-  fs.mkdirSync(path.join(__dirname, 'uploads'), { recursive: true });
+// ================= UPLOAD SETUP =================
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'uploads'));
-  },
+  destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${uuidv4()}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
+    const name = `${Date.now()}-${uuidv4()}${path.extname(file.originalname)}`;
+    cb(null, name);
   }
 });
 
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'));
-    }
-  }
-});
+const upload = multer({ storage });
 
-// Routes
+// ================= ROUTES =================
 
-// Health check
+// Health
 app.get('/api/health', (req, res) => {
-  res.json({ message: 'Server is running' });
+  res.json({ message: 'Server running' });
 });
 
-// Register new player
-app.post('/api/players/register', upload.single('image'), async (req, res) => {
-  try {
-    const { playerName, email, phone, age, sport, jersey_number, position } = req.body;
+// ================= AUTH =================
 
-    // Validation
-    if (!playerName || !email || !phone || !age || !sport) {
-      return res.status(400).json({ message: 'Please fill all required fields' });
-    }
+// Register
+app.post('/api/auth/register', (req, res) => {
+  const { email, password } = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({ message: 'Image is required' });
-    }
-
-    // Read existing players
-    const players = readPlayers();
-
-    // Check if email already exists
-    const existingPlayer = players.find(player => player.email === email);
-    if (existingPlayer) {
-      // Delete uploaded file
-      fs.unlinkSync(path.join(__dirname, 'uploads', req.file.filename));
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
-    // Create new player object
-    const newPlayer = {
-      _id: uuidv4(),
-      playerName,
-      email,
-      phone,
-      age: parseInt(age),
-      sport,
-      jersey_number: jersey_number || null,
-      position: position || null,
-      imageUrl: `/uploads/${req.file.filename}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Add to players array
-    players.push(newPlayer);
-
-    // Save to file
-    writePlayers(players);
-
-    res.status(201).json({
-      message: 'Player registered successfully',
-      player: newPlayer
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    if (req.file) {
-      try {
-        fs.unlinkSync(path.join(__dirname, 'uploads', req.file.filename));
-      } catch (e) {
-        // File deletion error
-      }
-    }
-    res.status(500).json({ message: 'Registration failed' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'All fields required' });
   }
+
+  const users = readUsers();
+
+  if (users.find(u => u.email === email)) {
+    return res.status(400).json({ message: 'User already exists' });
+  }
+
+  // 🔥 Assign role
+  const role = email === 'admin@gmail.com' ? 'admin' : 'user';
+
+  const newUser = {
+    id: uuidv4(),
+    email,
+    password,
+    role
+  };
+
+  users.push(newUser);
+  writeUsers(users);
+
+  res.json({ message: 'Registered successfully' });
 });
 
-// Get all players
-app.get('/api/players', async (req, res) => {
-  try {
-    const players = readPlayers();
-    res.json(players);
-  } catch (error) {
-    console.error('Error fetching players:', error);
-    res.status(500).json({ message: 'Failed to fetch players' });
+// Login
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+
+  const users = readUsers();
+
+  const user = users.find(
+    u => u.email === email && u.password === password
+  );
+
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' });
   }
+
+  res.json({
+    message: 'Login successful',
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    }
+  });
 });
 
-// Get single player
-app.get('/api/players/:id', async (req, res) => {
-  try {
-    const players = readPlayers();
-    const player = players.find(p => p._id === req.params.id);
+// ================= PLAYERS =================
 
-    if (!player) {
-      return res.status(404).json({ message: 'Player not found' });
-    }
+// Register player
+app.post('/api/players/register', upload.single('image'), (req, res) => {
+  const { playerName, email, phone, age, sport } = req.body;
 
-    res.json(player);
-  } catch (error) {
-    console.error('Error fetching player:', error);
-    res.status(500).json({ message: 'Failed to fetch player' });
+  if (!playerName || !email || !phone || !age || !sport) {
+    return res.status(400).json({ message: 'Fill all fields' });
   }
+
+  if (!req.file) {
+    return res.status(400).json({ message: 'Image required' });
+  }
+
+  const players = readPlayers();
+
+  if (players.find(p => p.email === email)) {
+    return res.status(400).json({ message: 'Email exists' });
+  }
+
+  const newPlayer = {
+    _id: uuidv4(),
+    playerName,
+    email,
+    phone,
+    age: parseInt(age),
+    sport,
+    imageUrl: `/uploads/${req.file.filename}`,
+    createdAt: new Date().toISOString()
+  };
+
+  players.push(newPlayer);
+  writePlayers(players);
+
+  res.json({ message: 'Player registered', player: newPlayer });
+});
+
+// Get players
+app.get('/api/players', (req, res) => {
+  res.json(readPlayers());
 });
 
 // Delete player
-app.delete('/api/players/:id', async (req, res) => {
-  try {
-    const players = readPlayers();
-    const playerIndex = players.findIndex(p => p._id === req.params.id);
+app.delete('/api/players/:id', (req, res) => {
+  const players = readPlayers();
+  const index = players.findIndex(p => p._id === req.params.id);
 
-    if (playerIndex === -1) {
-      return res.status(404).json({ message: 'Player not found' });
-    }
-
-    const player = players[playerIndex];
-
-    // Delete image file
-    const imagePath = path.join(__dirname, player.imageUrl);
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
-
-    // Remove player from array
-    players.splice(playerIndex, 1);
-
-    // Save updated players
-    writePlayers(players);
-
-    res.json({ message: 'Player deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting player:', error);
-    res.status(500).json({ message: 'Failed to delete player' });
+  if (index === -1) {
+    return res.status(404).json({ message: 'Not found' });
   }
+
+  players.splice(index, 1);
+  writePlayers(players);
+
+  res.json({ message: 'Deleted' });
 });
 
-// Error handling middleware
-app.use((error, req, res, next) => {
-  console.error('Error:', error);
-  res.status(500).json({ message: error.message || 'Server error' });
-});
-
-// 404 handler
+// ================= ERROR =================
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log('Endpoints:');
-  console.log('  POST   /api/players/register - Register new player');
-  console.log('  GET    /api/players - Get all players');
-  console.log('  GET    /api/players/:id - Get single player');
-  console.log('  DELETE /api/players/:id - Delete player');
+// ================= START =================
+app.listen(5000, () => {
+  console.log('Server running on http://localhost:5000');
 });
