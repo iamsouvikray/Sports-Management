@@ -18,6 +18,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const PLAYERS_FILE = path.join(__dirname, 'data', 'players.json');
 const USERS_FILE = path.join(__dirname, 'data', 'users.json');
 
+<<<<<<< HEAD
+// 🔥 OTP TEMP STORAGE
+const otpStore = {};
+
+=======
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
 // ================= USER FUNCTIONS =================
 const readUsers = () => {
   if (!fs.existsSync(USERS_FILE)) return [];
@@ -67,13 +73,145 @@ app.get('/api/health', (req, res) => {
 
 // ================= AUTH =================
 
+<<<<<<< HEAD
+// Register (UNCHANGED)
+=======
 // Register
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
 app.post('/api/auth/register', (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: 'All fields required' });
   }
+<<<<<<< HEAD
+
+  const users = readUsers();
+
+  if (users.find(u => u.email === email)) {
+    return res.status(400).json({ message: 'User already exists' });
+  }
+
+  const role = email === 'admin@gmail.com' ? 'admin' : 'user';
+
+  const newUser = {
+    id: uuidv4(),
+    email,
+    password,
+    role
+  };
+
+  users.push(newUser);
+  writeUsers(users);
+
+  res.json({ message: 'Registered successfully' });
+});
+
+// 🔥 LOGIN STEP 1 → SEND OTP (ONLY CHANGE HERE)
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+
+  const users = readUsers();
+
+  const user = users.find(
+    u => u.email === email && u.password === password
+  );
+
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  otpStore[email] = otp;
+
+  console.log(`OTP for ${email}: ${otp}`);
+
+  res.json({ message: 'OTP sent', email });
+});
+
+// 🔥 LOGIN STEP 2 → VERIFY OTP (NEW ROUTE)
+app.post('/api/auth/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+
+  if (otpStore[email] != otp) {
+    return res.status(400).json({ message: 'Invalid OTP' });
+  }
+
+  const users = readUsers();
+  const user = users.find(u => u.email === email);
+
+  delete otpStore[email];
+
+  res.json({
+    message: 'Login successful',
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    }
+  });
+});
+
+// ================= PLAYERS =================
+
+// 🔥 REGISTER PLAYER (ONLY PAYMENT ADDED)
+app.post('/api/players/register', upload.single('image'), (req, res) => {
+  const { playerName, email, phone, age, sport, paymentMethod } = req.body;
+
+  // 🔥 added paymentMethod in validation
+  if (!playerName || !email || !phone || !age || !sport || !paymentMethod) {
+    return res.status(400).json({ message: 'Fill all fields' });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({ message: 'Image required' });
+  }
+
+  const players = readPlayers();
+
+  if (players.find(p => p.email === email)) {
+    return res.status(400).json({ message: 'Email exists' });
+  }
+
+  const newPlayer = {
+    _id: uuidv4(),
+    playerName,
+    email,
+    phone,
+    age: parseInt(age),
+    sport,
+    paymentMethod, // 🔥 ONLY NEW FIELD
+    imageUrl: `/uploads/${req.file.filename}`,
+    createdAt: new Date().toISOString()
+  };
+
+  players.push(newPlayer);
+  writePlayers(players);
+
+  res.json({ message: 'Player registered', player: newPlayer });
+});
+
+// Get players (UNCHANGED)
+app.get('/api/players', (req, res) => {
+  res.json(readPlayers());
+});
+
+// Delete player (UNCHANGED)
+app.delete('/api/players/:id', (req, res) => {
+  const players = readPlayers();
+  const index = players.findIndex(p => p._id === req.params.id);
+
+  if (index === -1) {
+    return res.status(404).json({ message: 'Not found' });
+  }
+
+  players.splice(index, 1);
+  writePlayers(players);
+
+  res.json({ message: 'Deleted' });
+});
+
+=======
 
   const users = readUsers();
 
@@ -178,6 +316,7 @@ app.delete('/api/players/:id', (req, res) => {
   res.json({ message: 'Deleted' });
 });
 
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
 // ================= ERROR =================
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });

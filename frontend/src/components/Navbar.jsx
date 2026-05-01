@@ -4,6 +4,21 @@ import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+<<<<<<< HEAD
+  const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
+
+  // ✅ Load user on mount + update on login/logout
+  useEffect(() => {
+    const updateUser = () => {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      setUser(storedUser);
+    };
+
+    updateUser(); // initial load
+
+=======
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const navigate = useNavigate();
 
@@ -13,6 +28,7 @@ const Navbar = () => {
       setUser(JSON.parse(localStorage.getItem('user')));
     };
 
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
     window.addEventListener('storage', updateUser);
     window.addEventListener('focus', updateUser);
 
@@ -22,6 +38,10 @@ const Navbar = () => {
     };
   }, []);
 
+<<<<<<< HEAD
+  // ✅ Logout function
+=======
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
@@ -54,12 +74,20 @@ const Navbar = () => {
           </li>
 
           <li className="nav-item">
+<<<<<<< HEAD
+            <Link to="/player-register" className="nav-link" onClick={() => setIsOpen(false)}>
+=======
             <Link to="/register" className="nav-link" onClick={() => setIsOpen(false)}>
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
               Player Register
             </Link>
           </li>
 
+<<<<<<< HEAD
+          {/* 🔒 ADMIN */}
+=======
           {/* 🔒 ADMIN ONLY */}
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
           {user && user.role === 'admin' && (
             <li className="nav-item">
               <Link to="/admin" className="nav-link" onClick={() => setIsOpen(false)}>
@@ -90,7 +118,11 @@ const Navbar = () => {
             <>
               <li className="nav-item">
                 <span className="nav-link">
+<<<<<<< HEAD
+                  Hi, {user.email}
+=======
                   Hi, {user.email} ({user.role})
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
                 </span>
               </li>
 

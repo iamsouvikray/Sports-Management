@@ -204,3 +204,66 @@
   }
 }
 
+.pay-btn {
+  margin-top: 12px;
+  padding: 14px;
+  width: 100%;
+
+  background: linear-gradient(135deg, #ff4d4d, #ff1a1a);
+  color: #fff;
+
+  border: none;
+  border-radius: 12px;
+
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  box-shadow: 0 6px 15px rgba(255, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effect */
+.pay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 0, 0, 0.4);
+  background: linear-gradient(135deg, #ff1a1a, #cc0000);
+}
+
+/* Click effect */
+.pay-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+}
+
+/* Shine animation */
+.pay-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  transform: skewX(-25deg);
+}
+
+/* Shine on hover */
+.pay-btn:hover::before {
+  animation: shine 0.8s ease;
+}
+
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}

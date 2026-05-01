@@ -11,11 +11,17 @@ const PlayerRegistration = () => {
     sport: '',
     jersey_number: '',
     position: '',
+    paymentMethod: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
+
+  // 🔥 NEW STATES
+  const [paymentStatus, setPaymentStatus] = useState('');
+  const [paymentDone, setPaymentDone] = useState(false);
+
   const imageInputRef = useRef(null);
 
   const handleInputChange = (e) => {
@@ -29,7 +35,6 @@ const PlayerRegistration = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Preview image
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -38,14 +43,43 @@ const PlayerRegistration = () => {
     }
   };
 
+  // 🔥 FAKE PAYMENT FUNCTION
+  const handlePayment = () => {
+    if (!formData.paymentMethod) {
+      setPaymentStatus('Select payment method first ❌');
+      return;
+    }
+
+    setPaymentStatus('Processing payment...');
+
+    setTimeout(() => {
+      setPaymentStatus('Payment successful ✅');
+      setPaymentDone(true);
+    }, 1500);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const imageFile = imageInputRef.current?.files?.[0];
-    
-    // Validation
-    if (!formData.playerName || !formData.email || !formData.phone || !formData.age || !formData.sport || !imageFile) {
-      setMessage('Please fill all required fields');
+
+    // 🔥 VALIDATION
+    if (
+      !formData.playerName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.age ||
+      !formData.sport ||
+      !imageFile ||
+      !formData.paymentMethod
+    ) {
+      setMessage('Please fill all fields');
+      return;
+    }
+
+    // 🔥 IMPORTANT PAYMENT CHECK
+    if (!paymentDone) {
+      setMessage('Please complete payment first ❌');
       return;
     }
 
@@ -54,24 +88,20 @@ const PlayerRegistration = () => {
 
     try {
       const data = new FormData();
-      data.append('playerName', formData.playerName);
-      data.append('email', formData.email);
-      data.append('phone', formData.phone);
-      data.append('age', formData.age);
-      data.append('sport', formData.sport);
-      data.append('jersey_number', formData.jersey_number);
-      data.append('position', formData.position);
+      Object.keys(formData).forEach(key => {
+        data.append(key, formData[key]);
+      });
       data.append('image', imageFile);
 
-      const response = await axios.post('http://localhost:5000/api/players/register', data, {
+      await axios.post('http://localhost:5000/api/players/register', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
       setMessage('Player registered successfully! ✓');
-      
-      // Reset form
+
+      // RESET
       setFormData({
         playerName: '',
         email: '',
@@ -80,15 +110,19 @@ const PlayerRegistration = () => {
         sport: '',
         jersey_number: '',
         position: '',
+        paymentMethod: ''
       });
+
       setImagePreview(null);
-      if (imageInputRef.current) {
-        imageInputRef.current.value = '';
-      }
+      setPaymentDone(false);
+      setPaymentStatus('');
+
+      if (imageInputRef.current) imageInputRef.current.value = '';
 
       setTimeout(() => setMessage(''), 3000);
+
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Registration failed. Please try again.');
+      setMessage(error.response?.data?.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
@@ -98,15 +132,12 @@ const PlayerRegistration = () => {
     <div className="registration-container">
       <div className="registration-card">
         <h1>Player Registration</h1>
-        <p className="subtitle">Register as a new player</p>
 
         <form onSubmit={handleSubmit} className="registration-form">
-          {message && (
-            <div className={`message ${message.includes('successfully') ? 'success' : 'error'}`}>
-              {message}
-            </div>
-          )}
 
+          {message && <div className="message error">{message}</div>}
+
+          {/* NAME */}
           <div className="form-group">
             <label>Player Name *</label>
             <input
@@ -114,10 +145,10 @@ const PlayerRegistration = () => {
               name="playerName"
               value={formData.playerName}
               onChange={handleInputChange}
-              placeholder="Enter full name"
             />
           </div>
 
+          {/* EMAIL + PHONE */}
           <div className="form-row">
             <div className="form-group">
               <label>Email *</label>
@@ -126,22 +157,21 @@ const PlayerRegistration = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter email"
               />
             </div>
 
             <div className="form-group">
               <label>Phone *</label>
               <input
-                type="tel"
+                type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="Enter phone number"
               />
             </div>
           </div>
 
+          {/* AGE + SPORT */}
           <div className="form-row">
             <div className="form-group">
               <label>Age *</label>
@@ -150,28 +180,21 @@ const PlayerRegistration = () => {
                 name="age"
                 value={formData.age}
                 onChange={handleInputChange}
-                placeholder="Enter age"
-                min="15"
-                max="80"
               />
             </div>
 
             <div className="form-group">
               <label>Sport *</label>
-              <select name="sport" value={formData.sport} onChange={handleInputChange}>
-                <option value="">Select Sport</option>
-                <option value="Football">Football</option>
-                <option value="Basketball">Basketball</option>
-                <option value="Cricket">Cricket</option>
-                <option value="Tennis">Tennis</option>
-                <option value="Volleyball">Volleyball</option>
-                <option value="Baseball">Baseball</option>
-                <option value="Badminton">Badminton</option>
-                <option value="Other">Other</option>
-              </select>
+              <input
+                type="text"
+                name="sport"
+                value={formData.sport}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
 
+          {/* OPTIONAL */}
           <div className="form-row">
             <div className="form-group">
               <label>Jersey Number</label>
@@ -180,7 +203,6 @@ const PlayerRegistration = () => {
                 name="jersey_number"
                 value={formData.jersey_number}
                 onChange={handleInputChange}
-                placeholder="Enter jersey number"
               />
             </div>
 
@@ -191,35 +213,58 @@ const PlayerRegistration = () => {
                 name="position"
                 value={formData.position}
                 onChange={handleInputChange}
-                placeholder="Enter position (e.g., Forward, Goalkeeper)"
               />
             </div>
           </div>
 
+          {/* IMAGE */}
           <div className="form-group">
-            <label>Profile Photo *</label>
-            <div className="image-upload">
-              <input
-                ref={imageInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                id="image-input"
-              />
-              <label htmlFor="image-input" className="upload-label">
-                {imagePreview ? 'Change Photo' : 'Choose Photo'}
-              </label>
-            </div>
+            <label>Upload Image *</label>
+            <input type="file" ref={imageInputRef} onChange={handleImageChange} />
             {imagePreview && (
-              <div className="image-preview">
-                <img src={imagePreview} alt="Preview" />
-              </div>
+              <img src={imagePreview} alt="preview" className="preview-img" />
             )}
           </div>
 
-          <button type="submit" className="submit-btn" disabled={loading}>
+          {/* PAYMENT */}
+          <div className="form-group">
+            <label>Payment Method *</label>
+            <select
+              name="paymentMethod"
+              value={formData.paymentMethod}
+              onChange={handleInputChange}
+            >
+              <option value="">Select Payment</option>
+              <option value="UPI">UPI</option>
+              <option value="Card">Card</option>
+              <option value="Cash">Cash</option>
+            </select>
+          </div>
+
+          {/* PAY BUTTON */}
+          <button
+            type="button"
+            className="pay-btn"
+            onClick={handlePayment}
+          >
+            Pay Now
+          </button>
+
+          {paymentStatus && (
+            <p className={`payment-status ${paymentDone ? 'success' : 'failed'}`}>
+              {paymentStatus}
+            </p>
+          )}
+
+          {/* SUBMIT */}
+          <button
+            type="submit"
+            className="submit-btn"
+            disabled={!paymentDone || loading}
+          >
             {loading ? 'Registering...' : 'Register Player'}
           </button>
+
         </form>
       </div>
     </div>

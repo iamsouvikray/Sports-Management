@@ -106,4 +106,10 @@
 
 .logout-btn:hover::after {
   width: 100%;
+<<<<<<< HEAD
+}
+.login-box button {
+  margin-top: 10px;
+=======
+>>>>>>> d267c95cc6815e8ce460dd1f3a81ee7a541c8a72
 }
